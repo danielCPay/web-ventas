@@ -295,6 +295,9 @@
                     <router-link to="/mantenedores/producto">Productos</router-link>
                   </li>
                   <li class="slide-item">
+                    <router-link to="/mantenedores/productosprecios">Precios por Presentación</router-link>
+                  </li>
+                  <li class="slide-item">
                     <router-link to="/mantenedores/proveedor">Proveedor</router-link>
                   </li>
                   <li class="slide-item">
@@ -328,7 +331,10 @@
                     class="angle fe fe-chevron-right"></i></a>
                 <ul class="slide-menu" style="display: none">
                   <li class="slide-item">
-                    <router-link to="/ventas/listadoproductos">Generar Ventas</router-link>
+                    <router-link to="/ventas/ventarapida">Venta Rapida</router-link>
+                  </li>
+                  <li class="slide-item">
+                    <router-link to="/ventas/listadoproductos">Venta Normal</router-link>
                   </li>
                   <li class="slide-item">
                     <router-link to="/ventas/listadoventas">Listado de Ventas

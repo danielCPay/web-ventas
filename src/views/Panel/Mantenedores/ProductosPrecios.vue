@@ -1,20 +1,17 @@
 <template>
   <vue-loading :fullPage="fullPage" :isLoading="isLoading" :spinner="spinner" />
   <div class="card-header">
-    <h3 class="card-title">MANTENEDOR DE PRODUCTOS</h3>
+    <h3 class="card-title">MANTENEDOR DE PRECIOS</h3>
     <div class="card-options">
-      <input type="file" id="files" style="display: none" />
-      <a href="javascript:void(0)" class="btn btn-success btn-sm" @click="openDocumentFile"><i
-          class="fe fe-upload me-2"></i>Importar Productos</a>
       <a href="javascript:void(0)" class="btn btn-secondary btn-sm ms-2" @click="download_excel"><i
           class="fe fe-download me-2"></i>Descargar Productos</a>
-      <!-- <a href="javascript:void(0)" class="btn btn-info btn-sm ms-2" @click="abrirVistaCodigosBarra">
+      <a href="javascript:void(0)" class="btn btn-info btn-sm ms-2" @click="abrirVistaCodigosBarra">
         <i class="fe fe-printer me-2"></i>Imprimir Códigos de Barra
-      </a> -->
+      </a>
     </div>
   </div>
   <div class="card-body pb-2">
-    <h3 class="text-left">Lista de Productos</h3>
+    <h3 class="text-left">Lista de Presentaciones</h3>
 
     <div class="row">
       <div class="col-md-3 mb-3" style="text-align: center">
@@ -31,11 +28,6 @@
         <button type="button" class="btn btn-primary" style="margin: 2px" @click="cargarRegistros()">
           <i class="fe fe-search me-2"></i>Buscar
         </button>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropMantenedorDecano"
-          style="margin: 2px" @click="cargarAgregar()">
-          <i class="fe fe-file me-2"></i>
-          Agregar
-        </button>
       </div>
     </div>
     <div class="table-responsive">
@@ -50,8 +42,7 @@
             <th scope="col">Precio</th>
             <th scope="col">Costo</th>
             <th scope="col">Marca</th>
-            <th scope="col">Stock.Min</th>
-            <th scope="col" class="text-center">Opciones</th>
+            <th scope="col">Stock.Min</th>           
           </tr>
         </thead>
         <tbody>
@@ -109,15 +100,7 @@
                 ? 'text-decoration-line: line-through;color:red'
                 : ''
                 ">{{ item.stockminimo }}</span>
-            </td>
-            <td class="text-center">
-              <i title="Editar" class="fa fa-pencil mx-1 text-yellow" role="button" data-bs-toggle="modal"
-                data-bs-target="#staticBackdropMantenedorDecano" @click="cargarVer(item, index)"></i>
-              <i title="Agregar Precios" class="fa fa-money mx-1 text-blue" role="button"
-                @click="verPreciosPorPresentacion(item)"></i>
-              <i title="Eliminar" class="fa fa-trash mx-1 text-danger" role="button"
-                @click="cargarAnular(item, index)"></i>
-            </td>
+            </td>          
           </tr>
         </tbody>
       </table>
@@ -354,7 +337,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      ListarRegistros: "_producto/ListarRegistros",
+      ListarRegistros: "_producto/ListarRegistrosPrecios",
       AgregarRegistro: "_producto/AgregarRegistro",
       ModificarRegistro: "_producto/ModificarRegistro",
       EliminarRegistro: "_producto/EliminarRegistro",
@@ -408,196 +391,8 @@ export default {
       const filename = "reporte-productos" + currentDate;
       XLSX.utils.book_append_sheet(workbook, data, currentDate);
       XLSX.writeFile(workbook, `${filename}.xlsx`);
-    },
-    openDocumentFile() {
-      const inputFile = document.getElementById("files");
-      inputFile.click();
-    },
-    // async fileUpload(e) {
-    //   var files = e.target.files,
-    //     f = files[0];
-    //   var reader = new FileReader();
-    //   reader.onload = async function (e) {
-    //     var data = new Uint8Array(e.target.result);
-    //     var workbook = XLSX.read(data, { type: "array" });
-    //     let sheetName = workbook.SheetNames[0];
-    //     let worksheet = workbook.Sheets[sheetName];
-    //     let json = XLSX.utils.sheet_to_json(worksheet);
-    //     json.forEach((item) => {
-    //       this.producto.productoid = 0;
-    //       this.producto.codigo = item.CODIGO;
-    //       this.producto.descripcionproducto = item.DESCRIPCION;
-    //       this.producto.precioventa = item.PRECIO;
-    //       this.producto.subfamiliaid = item.SUBFAMILIA;
-    //       this.producto.unidadmedidaid = item.UND;
-    //       this.producto.costo = item.COSTO;
-    //       this.producto.marca = item.MARCA;
-    //       this.producto.stockminimo = item.STOCKMINIMO;
-    //       this.producto.cantidadunidadmedida = item.CANTIDADPORUND;
-    //       this.guardarCambiosImportacion(item.PRECIO);
-    //     });
-    //     global._mensaje_exito("Importando los productos....");
-    //   }.bind(this);
-    //   reader.readAsArrayBuffer(f);
-    // },
-    async fileUpload(e) {
-      var files = e.target.files,
-        f = files[0];
-      var reader = new FileReader();
-
-      reader.onload = async function (e) {
-        var data = new Uint8Array(e.target.result);
-        var workbook = XLSX.read(data, { type: "array" });
-        let sheetName = workbook.SheetNames[0];
-        let worksheet = workbook.Sheets[sheetName];
-        let json = XLSX.utils.sheet_to_json(worksheet);
-
-        // Agrupamos los productos por descripción, marca, und, subfamilia
-        let productosMap = {};
-        let contadorCodigo = 1;
-
-        for (const item of json) {
-          const key = `${item.DESCRIPCION}|${item.MARCA}|${item.UND}|${item.SUBFAMILIA}`;
-          let productoId;
-          let presentacionId;
-
-          if (!productosMap[key]) {
-            // Generar código automáticamente
-            const codigoGenerado = `P-${contadorCodigo.toString().padStart(4, '0')}`;
-            contadorCodigo++;
-
-            // Crear producto base
-            this.producto.productoid = 0;
-            this.producto.codigo = codigoGenerado;
-            this.producto.descripcionproducto = item.DESCRIPCION;
-            this.producto.marca = item.MARCA;
-            this.producto.unidadmedidaid = item.UND;
-            this.producto.subfamiliaid = item.SUBFAMILIA;
-            this.producto.stockminimo = item.STOCKMINIMO || 0;
-
-            const res = await this.guardarProductosImportacion(); // ← sigue usando tu lógica
-
-            if (res?.exito) {
-              productoId = res.datos.id;
-              productosMap[key] = {
-                id: productoId,
-                codigo: codigoGenerado,
-              };
-            } else {
-              console.warn("Error al guardar producto base:", res?.mensaje);
-              continue;
-            }
-          } else {
-            productoId = productosMap[key].id;
-          }
-
-          // Crear presentación     
-          const resPres = await this.agregarPrecioProductoImportacion(productoId, item.DESCRIPCION, item.PRECIO);
-          console.log(resPres);
-          if (resPres?.exito) {
-            presentacionId = resPres.datos.id;
-            await this.procesarMovimientosAlmacen([{
-              movimientoid: 0,
-              productoid: productoId,
-              cantidad: item.STOCKINICIAL || 0,
-              presentacion: 'UNIDAD',
-              cantidadpresentacion: item.CANTIDADPORUND,
-              precio: parseFloat(item.PRECIO),
-              importe: parseFloat(item.PRECIO) * (item.STOCKINICIAL || 0),
-              presentacionesid: presentacionId,
-              almacenid: 1, // ← si solo tienes uno, lo puedes dejar fijo
-            }]);
-
-          } else {
-            console.warn("Error al guardar presentación:", resPres?.mensaje);
-          }
-        }
-
-        global._mensaje_exito("Importación completa: productos, presentaciones y stock inicial.");
-      }.bind(this);
-
-      reader.readAsArrayBuffer(f);
-    },
-    procesarMovimientosAlmacen: async function (detalles) {
-      this.movimiento.fechamovimiento = this.currentDate;
-      this.movimiento.nrodocumento = "";
-      this.movimiento.tipodocumento = "";
-      this.movimiento.razon = "Importación desde Excel";
-      this.movimiento.tipomovimiento = "ENTRADA";
-      this.movimiento.nronotaingreso = "";
-      this.movimiento.nronotasalida = "";
-      this.movimiento.user = this.usuario.usuario;
-
-      this.movimiento.movimientosdetalle = detalles;
-
-      this.isLoading = true;
-      this.textloading = "Procesando Movimiento Almacén";
-      let res = await this.AgregarMovimiento(this.movimiento);
-
-      if (res?.exito) {
-        ElNotification({
-          title: "Success",
-          duration: 1500,
-          message: "Movimiento Almacén se generó correctamente",
-          type: "success",
-        });
-      } else {
-        console.warn("Error al registrar movimientos:", res?.mensaje);
-      }
-
-      this.isLoading = false;
-      return res;
-    },
-
-    /*procesarMovimientosAlmacen: async function (detalles) {
-      this.movimiento.fechamovimiento = this.currentDate;
-      this.movimiento.nrodocumento = "";
-      this.movimiento.tipodocumento = "";
-      this.movimiento.razon = "Importación desde Excel";
-      this.movimiento.tipomovimiento = "ENTRADA";
-      this.movimiento.nronotaingreso = "";
-      this.movimiento.nronotasalida = "";
-      this.movimiento.user = this.usuario.usuario;
-
-      let detalleProducto = [];
-      this.listaProductos.forEach((item) => {
-        let productos = {
-          movimientoid: 0,
-          productoid: item.productoid,
-          cantidad: item.cantidad,
-          presentacion: item.decripcionpresentacion,
-          cantidadpresentacion: item.cantidadpresentacion,
-          precio: parseFloat(item.precioventa),
-          importe: item.cantidad * parseFloat(item.precioventa),
-          presentacionesid: item.presentacionesid,
-          almacenid: 1,
-        };
-
-        detalleProducto.push(productos);
-      });
-
-      this.movimiento.movimientosdetalle = detalleProducto;
-
-      this.isLoading = true;
-      this.textloading = "Procesando Movimiento Almacén";
-      let res = await this.AgregarMovimiento(this.movimiento);
-
-      if (res?.exito) {
-        this.isLoading = false;
-        ElNotification({
-          title: "Success",
-          duration: 1500,
-          message: "Movimiento Almacén se generó correctamente",
-          type: "success",
-        });
-      }
-    },*/
-
-    setupFileInput() {
-      document
-        .getElementById("files")
-        .addEventListener("change", this.fileUpload, false);
-    },
+    },  
+ 
     comboSubFamilia: async function () {
       var res = await this.SubFamiliaDesplegable();
       this.cboSubFamilia = res;
@@ -863,8 +658,7 @@ export default {
   mounted() {
     if (localStorage.getItem("login")) {
       this.usuario = JSON.parse(localStorage.getItem("login"));
-    }
-    this.setupFileInput();
+    }  
     this.comboSubFamilia();
     this.comboUnidadMedida();
     this.cargarRegistros();

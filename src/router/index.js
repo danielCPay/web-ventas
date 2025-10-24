@@ -57,10 +57,10 @@ const routes = [
         component: () => import("../views/Panel/Mantenedores/Insumo.vue"),
       },
       {
-        path: "/mantenedores/mesa",
-        name: "mesa",
+        path: "/mantenedores/productosprecios",
+        name: "productosprecios",
         meta: { necesita_autenticacion: true },
-        component: () => import("../views/Panel/Mantenedores/Mesa.vue"),
+        component: () => import("../views/Panel/Mantenedores/ProductosPrecios.vue"),
       },
       {
         path: "/ventas/monitoreomesas",
@@ -92,6 +92,12 @@ const routes = [
         name: "listadoproductos",
         meta: { necesita_autenticacion: true },
         component: () => import("../views/Panel/Ventas/ListadoProductos.vue"),
+      },
+      {
+        path: "/ventas/ventarapida",
+        name: "ventarapida",
+        meta: { necesita_autenticacion: true },
+        component: () => import("../views/Panel/Ventas/VentaRapida.vue"),
       },
       {
         path: "/cajachica/resumencaja",
