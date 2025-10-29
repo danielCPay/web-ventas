@@ -52,6 +52,17 @@ export default {
         delete state.listaProductos[payload];
       }
     },
+    aumentarPrecio(state, payload) {
+      state.listaProductos[payload].precioventa =
+        state.listaProductos[payload].precioventa + 1;
+    }, 
+    disminuirPrecio(state, payload) {
+      state.listaProductos[payload].precioventa =
+        state.listaProductos[payload].precioventa - 1;
+      if (state.listaProductos[payload].precioventa === 0) {
+        delete state.listaProductos[payload];
+      }
+    },
   },
   actions: {
     ResetearCantidad(context, valor) {
@@ -62,6 +73,12 @@ export default {
     },
     DisminuirCantidad(context, datos) {
       context.commit("disminuirCantidad", datos);
+    },
+    AumentarPrecio(context, datos) {
+      context.commit("aumentarPrecio", datos);
+    },
+    DisminuirPrecio(context, datos) {
+      context.commit("disminuirPrecio", datos);
     },
     SeleccionarPersonal: async function (context, personalid) {
       context.commit("seleccionar_personal", personalid);

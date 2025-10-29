@@ -41,6 +41,7 @@
                         <i class="fa fa-plus"></i>
                       </button>
                     </div>
+
                     <p class="fs-12 fw-semibold">
                       <a href="javascript:void(0)" class="cursor: pointer;" @click="
                         selectPreciosPresentacion(item.productoid, index)
@@ -50,12 +51,27 @@
                     </p>
                   </div>
                   <div class="ms-auto">
-                    <span class="fs-14 fw-semibold">
-                      S/.{{ parseFloat(item.precioventa).toFixed(2) }}</span>
-                    <a href="javascript:void(0)" class="text-muted ms-3 text-end" title="Quitar producto"
-                      @click="abrirModal(item, index)">
-                      <i class="fe fe-trash-2 text-danger"> </i>
-                    </a>
+                    <div class="text-black fs-14">
+                      S/.
+                      <button type="button" class="ms-3 btn btn-icon btn-red btn-sm mb-1" title="Disminuir Precio"
+                        :disabled="item.pedidoid == 0 ? false : true" @click="DisminuirPrecio(index)">
+                        <i class="fa fa-minus"></i>
+                      </button>
+                      <span class="fs-12 ms-3">
+                        {{ parseFloat(item.precioventa).toFixed(2) }}
+                      </span>
+                      <button type="button" class="ms-3 btn btn-icon btn-red btn-sm mb-1" title="Aumentar Precio"
+                        :disabled="item.pedidoid == 0 ? false : true" @click="AumentarPrecio(index)">
+                        <i class="fa fa-plus"></i>
+                      </button>
+                      <a href="javascript:void(0)" class="text-muted ms-3 text-end" title="Quitar producto"
+                        @click="abrirModal(item, index)">
+                        <i class="fe fe-trash-2 text-danger"> </i>
+                      </a>
+                    </div>
+                    <!-- <span class="fs-14 fw-semibold">
+                      S/.{{ parseFloat(item.precioventa).toFixed(2) }}</span> -->
+
                   </div>
                 </div>
               </div>
@@ -181,6 +197,8 @@ export default {
       AnularPedidoDetalle: "_pedido/AnularPedidoDetalle",
       AumentarCantidad: "_pedido/AumentarCantidad",
       DisminuirCantidad: "_pedido/DisminuirCantidad",
+      AumentarPrecio: "_pedido/AumentarPrecio",
+      DisminuirPrecio: "_pedido/DisminuirPrecio",
       ObtenerPreciosPresentacion: "_producto/ObtenerPreciosPresentacion",
       AgregarProductos: "_pedido/AgregarProductos",
     }),
