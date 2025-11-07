@@ -288,15 +288,22 @@
                         </div>
                         <div class="row">
                           <div class="col-md-4 mb-3" style="text-align: center">
-                            <div class="form-group">
+                            <div class="input-group d-flex w-100 float-end">
+                              <input type="text" class="form-control border-end-0 my-2" placeholder="Search ..."
+                                ref="barcode" v-model="barcode" @keyup.enter="buscarPorCodigo()" />
+                              <button class="btn input-group-text bg-transparent border-start-0 text-muted my-2">
+                                <i class="fe fe-search text-muted" aria-hidden="true"></i>
+                              </button>
+                            </div>
+                            <!-- <div class="form-group">
                               <el-select size="large" style="width: 100%" v-model="producto" filterable
                                 placeholder="Productos" ref="producto" @change="obtenerProducto()">
                                 <el-option v-for="item in listaProductos" :key="item.productoid"
                                   :label="item.descripcionproducto" :value="item.productoid"></el-option>
                               </el-select>
-                            </div>
+                            </div> -->
                           </div>
-                          <div class="col-md-2 mb-3" style="text-align: center">
+                          <!-- <div class="col-md-2 mb-3" style="text-align: center">
                             <div class="form-group">
                               <input type="text" class="form-control" placeholder="Unidad Medida" v-model="unidadmedida"
                                 disabled />
@@ -321,7 +328,7 @@
                                 ref="cantidad" @keypress.enter="agregarProductos()" min="0" :disabled="notaingreso.doccompraid == 0 ? false : true
                                   " />
                             </div>
-                          </div>
+                          </div> -->
                         </div>
                         <div class="row">
                           <div class="col-md-12">
@@ -446,6 +453,7 @@ export default {
   },
   data() {
     return {
+      barcode: "",
       reloadDataComprasProvisionar: false,
       textloading: "",
       spinner: "bar-fade-scale",
@@ -556,6 +564,7 @@ export default {
       DetalleCompras: "_compra/DetalleCompras",
       DetelleNotaIngreso: "_notaingreso/DetelleNotaIngreso",
       AnularNotaIngresoDetalle: "_notaingreso/AnularNotaIngresoDetalle",
+      ObtenerPreciosPresentacion: "_producto/ObtenerPreciosPresentacion",
     }),
     openDocumentFile() {
       const inputFile = document.getElementById("files");
@@ -902,7 +911,15 @@ export default {
           this.costoinsumo = null;
           this.cantidadpresentacion = 1;
           this.presentacionesid = 0;
-          this.$refs.producto.focus();
+          this.$refs.barcode.focus();
+
+          ElNotification({
+            title: "Éxito",
+            duration: 1500,
+            message:
+              "Se agregó " + 1 + " " + this.descripcionproducto + ".",
+            type: "success",
+          });
         } else {
           global._mensaje_advertencia(
             "Producto duplicado, debe actualizar el registro!"
@@ -911,6 +928,45 @@ export default {
       } else {
         global._mensaje_advertencia("Ingrese los datos correctos!");
       }
+    },
+    buscarPorCodigo: async function () {
+      if (!this.barcode) return;
+
+      try {
+        // Llamas a tu backend Laravel
+        const response = await this.ObtenerPreciosPresentacion({ codigo: this.barcode });
+        const producto = response;
+        console.log(producto);
+        if (producto) {
+          // Lo agregas al pedido directamente
+
+          this.unidadmedida = producto.unidadmedida;
+          this.costoproducto = producto.precio;
+          this.cantidad = 1;
+          this.cantidadpresentacion = producto.cantidadunidadmedida;
+          this.presentacionesid = producto.presentacionesid;
+          this.producto = producto.productoid;
+          this.descripcionproducto = producto.decripcionpresentacion;
+
+          this.agregarProductos();
+        } else {
+          ElNotification({
+            title: "Error",
+            message: "Producto no encontrado",
+            type: "error",
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        ElNotification({
+          title: "Error",
+          message: "Código no encontrado o conexión fallida",
+          type: "error",
+        });
+      }
+
+      // Limpia el input para el siguiente escaneo
+      this.barcode = "";
     },
     obtenerProducto: async function () {
       let producto = {
