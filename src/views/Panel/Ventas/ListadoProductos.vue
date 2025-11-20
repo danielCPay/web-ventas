@@ -222,7 +222,7 @@ export default {
       this.listaProductos[this.indexListaProductos].descripcionproducto =
         item.decripcionpresentacion;
       this.listaProductos[this.indexListaProductos].presentacionesid =
-        item.presentacionesid;     
+        item.presentacionesid;
 
       this.closeModalCambiarPreciosPresentacion();
     },
@@ -278,6 +278,7 @@ export default {
     },
     guardarPedido: async function () {
       if (this.listaProductos.length > 0) {
+        sessionStorage.setItem('origenVenta', 'normal');
         this.$router.push({
           name: "emitirdocumentoventa",
         });
