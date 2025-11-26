@@ -150,7 +150,7 @@
                 <li class="list-group-item border-0">
                   Saldo
                   <span class="h4 fw-bold mb-0 float-end text-danger">{{ seleccionmoneda == "SOLES" ? "S/." : "$/."
-                    }}{{ totalSaldo }}</span>
+                  }}{{ totalSaldo }}</span>
                 </li>
               </ul>
             </div>
@@ -697,9 +697,16 @@ export default {
       await this.ActualizarUltimoNumeroUsado(numeracion);
     },
     RetornarGenerarVenta() {
-      this.$router.push({
-        name: "listadoproductos",
-      });
+      const origen = sessionStorage.getItem('origenVenta');
+      console.log(origen);
+      if (origen === 'rapida') {
+        this.$router.push({ name: 'ventarapida' });
+      } else {
+        this.$router.push({ name: 'listadoproductos' });
+      }
+      // this.$router.push({
+      //   name: "listadoproductos",
+      // });
     },
     ComboMoneda: async function () {
       let res = await this.ListarMoneda();
@@ -810,10 +817,10 @@ export default {
     this.ComboFormaPago();
 
     this.formapagoid = 2;
-    this.ComboTipoTarjetaFormaPago();  
+    this.ComboTipoTarjetaFormaPago();
     this.tarjetacreditoid = 1;
-    this.monedaformapago = 1;   
-     
+    this.monedaformapago = 1;
+
     this.importeformapago = this.totalPago;
     this.agregarFormaPago();
   },

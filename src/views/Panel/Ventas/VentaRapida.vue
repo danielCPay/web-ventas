@@ -268,6 +268,7 @@ export default {
     },
     guardarPedido: async function () {
       if (this.listaProductos.length > 0) {
+        sessionStorage.setItem('origenVenta', 'rapida');
         this.$router.push({
           name: "emitirdocumentoventa",
         });
