@@ -887,7 +887,7 @@ export default {
         poratender: cantidad,
         cantidadsolicitada: 0,
         atendido: 0,
-        preciocompra: costoinsumo,
+        preciocompra: 0,
         presentacionesid: presentacionesid,
       };
       if (
@@ -941,7 +941,7 @@ export default {
           // Lo agregas al pedido directamente
 
           this.unidadmedida = producto.unidadmedida;
-          this.costoproducto = producto.precio;
+          this.costoinsumo = producto.costo;
           this.cantidad = 1;
           this.cantidadpresentacion = producto.cantidadunidadmedida;
           this.presentacionesid = producto.presentacionesid;
